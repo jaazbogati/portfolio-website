@@ -12,30 +12,36 @@ export default function Contact() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    setLoading(true);
+  try {
+    const response = await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: form.email,
+        message: form.message,
+      }),
+    });
 
-    emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        {
-            user_email: form.email,
-            message: form.message,
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-    )
-    .then(() => {
-      setLoading(false);
+    const result = await response.json();
+
+    if (response.ok && result.success) {
       setStatus("Message sent successfully!");
       setForm({ email: "", message: "" });
-    })
-    .catch(() => {
-      setLoading(false);
+    } else {
       setStatus("Failed to send message.");
-    });
-  };
+    }
+  } catch (error) {
+    setStatus("Failed to send message.");
+  } finally {
+    setLoading(false);
+  }
+};   
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-10">
