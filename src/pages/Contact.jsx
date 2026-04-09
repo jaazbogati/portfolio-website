@@ -1,7 +1,7 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
-import { SiGmail } from "react-icons/si";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { Mail } from "lucide-react";
+import { SiGithub, SiLinkedin } from "@icons-pack/react-simple-icons";
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -10,38 +10,27 @@ export default function Contact() {
   });
 
   const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch('/api/sendEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: form.email,
+    emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      {
+        user_email: form.email,
         message: form.message,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (response.ok && result.success) {
+      },
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    )
+    .then(() => {
       setStatus("Message sent successfully!");
       setForm({ email: "", message: "" });
-    } else {
+    })
+    .catch(() => {
       setStatus("Failed to send message.");
-    }
-  } catch (error) {
-    setStatus("Failed to send message.");
-  } finally {
-    setLoading(false);
-  }
-};   
+    });
+  };
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-10">
@@ -72,20 +61,15 @@ export default function Contact() {
 
         <button
           type="submit"
-          disabled={loading}
           className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition"
         >
-          {loading ? "Sending..." : "Send Message"}
+          Send Message
         </button>
 
         {status && (
           <p className="text-sm text-center text-gray-600">{status}</p>
         )}
       </form>
-
-       <p className="text-gray-600 text-center max-w-md">
-        Feel free to checkout my work and reach out for opportunities, collaborations, or just to connect.
-      </p>
 
       {/* CONTACT LINKS */}
       <div className="w-full max-w-md space-y-4">
@@ -94,7 +78,7 @@ export default function Contact() {
           href="mailto:jaazbogati@gmail.com"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <SiGmail size={20} />
+          <Mail size={20} />
           <span>jaazbogati@gmail.com</span>
         </a>
 
@@ -104,7 +88,7 @@ export default function Contact() {
           rel="noreferrer"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <FaGithub size={20} />
+          <SiGithub size={20} />
           <span>github.com/jaazbogati</span>
         </a>
 
@@ -114,7 +98,7 @@ export default function Contact() {
           rel="noreferrer"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <FaLinkedin size={20} />
+          <SiLinkedin size={20} />
           <span>linkedin.com/in/JaphetJeremiah</span>
         </a>
 
