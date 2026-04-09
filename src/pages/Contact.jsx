@@ -2,34 +2,64 @@ import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import { SiGmail } from "react-icons/si";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { ClipLoader } from "react-spinners";
+import toast from "react-hot-toast";
 
 export default function Contact() {
   const [form, setForm] = useState({
     email: "",
     message: "",
+    honeypot: "",
   });
 
-  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const RATE_LIMIT_MS = 60_000;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    emailjs.send(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-      {
-        user_email: form.email,
-        message: form.message,
-      },
-      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-    )
-    .then(() => {
-      setStatus("Message sent successfully!");
-      setForm({ email: "", message: "" });
-    })
-    .catch(() => {
-      setStatus("Failed to send message.");
-    });
+    if (form.honeypot) return;
+
+
+    const lastSent = localStorage.getItem("lastContactSent");
+    if (lastSent && Date.now() - Number(lastSent) < RATE_LIMIT_MS) {
+      toast.error("Please wait a minute before sending again.");
+      return;
+    }
+    
+    if (!form.email.includes("@") || form.message.trim().length < 5) {
+      toast.error("Please enter a valid email and message.");
+      return;
+    }
+
+    if (form.message.length > 2000) {
+      toast.error("Message too long.");
+      return;
+    }
+    
+    setLoading(true);
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          user_email: form.email,
+          message: form.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+      localStorage.setItem("lastContactSent", Date.now())
+      toast.success("Message sent successfully 🚀");
+      setForm({ email: "", message: "", honeypot: "" });
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send message ❌");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,7 +70,7 @@ export default function Contact() {
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white p-6 rounded-xl shadow space-y-4"
+        className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg space-y-4 hover:shadow-xl transition duration-300"
       >
         <input
           type="email"
@@ -50,25 +80,37 @@ export default function Contact() {
           required
           className="w-full border p-3 rounded"
         />
+        {/* Honeypot - invisible to humans, bots fill it */}
+        <input
+          type="text"
+          name="website"
+          value={form.honeypot}
+          onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
+          autoComplete="off"
+          tabIndex={-1}
+          aria-hidden="true"
+          style={{ display: "none" }}
+        />
 
         <textarea
           placeholder="Your message"
           value={form.message}
           onChange={(e) => setForm({ ...form, message: e.target.value })}
           required
-          className="w-full border p-3 rounded h-32"
+          className="w-full border p-3 rounded h-32 focus:outline-none focus:ring focus:ring-blue-400"
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition"
+          disabled={loading}
+          className={`w-full bg-blue-500 text-white py-3 rounded flex justify-center items-center gap-2 transition ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          Send Message
+          {loading ? <ClipLoader size={20} color="#161111" /> : "Send Message"}
         </button>
-
-        {status && (
-          <p className="text-sm text-center text-gray-600">{status}</p>
-        )}
       </form>
 
       {/* CONTACT LINKS */}
