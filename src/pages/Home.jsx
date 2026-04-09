@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 
 export default function Home() {
@@ -50,13 +51,13 @@ useEffect(() => {
           Featured Project
         </h2>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 border flex flex-col md:flex-row gap-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 border grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Screenshot */}
           <img
             src="/pictures/Incident-tracker-dashboard.png"
             alt="Incident Tracker"
-            className="rounded-lg w-full md:w-1/2 object-cover hover:scale-105 transition duration-300"
+            className="rounded-lg w-full h-48 object-cover hover:scale-105 transition duration-300"
           />
 
           {/* Content */}
@@ -81,10 +82,10 @@ useEffect(() => {
             </div>
 
             <a
-              href="https://incident-tracker-ui.vercel.app"
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue-500 font-medium hover:underline"
+                href="https://incident-tracker-ui.vercel.app"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-500 font-medium hover:underline"
             >
               View Live →
             </a>
@@ -109,12 +110,12 @@ useEffect(() => {
       </div>
 
       <div className="flex gap-4">
-        <a href="/projects" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <Link to="/projects" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           View Projects
-        </a>
-        <a href="/contact" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+        </Link>
+        <Link to="/contact" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
           Contact Me
-        </a>
+        </Link>
       </div>
     </div>
   );
