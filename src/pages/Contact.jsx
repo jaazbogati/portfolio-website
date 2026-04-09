@@ -1,7 +1,7 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
-import { Mail } from "lucide-react";
-import { SiGithub, SiLinkedin } from "@icons-pack/react-simple-icons";
+import { SiGmail } from "react-icons/si";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -78,7 +78,7 @@ export default function Contact() {
           href="mailto:jaazbogati@gmail.com"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <Mail size={20} />
+          <SiGmail size={20} />
           <span>jaazbogati@gmail.com</span>
         </a>
 
@@ -88,7 +88,7 @@ export default function Contact() {
           rel="noreferrer"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <SiGithub size={20} />
+          <FaGithub size={20} />
           <span>github.com/jaazbogati</span>
         </a>
 
@@ -98,7 +98,7 @@ export default function Contact() {
           rel="noreferrer"
           className="flex items-center gap-3 bg-white shadow p-4 rounded-lg"
         >
-          <SiLinkedin size={20} />
+          <FaLinkedin size={20} />
           <span>linkedin.com/in/JaphetJeremiah</span>
         </a>
 
